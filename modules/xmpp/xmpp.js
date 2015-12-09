@@ -198,6 +198,7 @@ function initStrophePlugins()
     require("./strophe.util")();
     require("./strophe.ping")(XMPP, eventEmitter);
     require("./strophe.rayo")();
+    require("./strophe.jibri")();
     require("./strophe.logger")();
 }
 
@@ -300,7 +301,7 @@ var XMPP = {
         initStrophePlugins();
         registerListeners();
         Moderator.init(this, eventEmitter);
-        Recording.init();
+        Recording.init(eventEmitter);
         var configDomain = config.hosts.anonymousdomain || config.hosts.domain;
         // Force authenticated domain if room is appended with '?login=true'
         if (config.hosts.anonymousdomain &&

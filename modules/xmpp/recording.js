@@ -12,6 +12,9 @@ var recordingEnabled;
  */
 var useJirecon;
 
+var useJibri;
+var eventEmitter;
+
 /**
  * The ID of the jirecon recording session. Jirecon generates it when we
  * initially start recording, and it needs to be used in subsequent requests
@@ -49,6 +52,7 @@ function setRecordingJirecon(state, token, callback, connection) {
         function (result) {
             // TODO wait for an IQ with the real status, since this is
             // provisional?
+            //FIXME: state should reflect the NEW state.
             jireconRid = $(result).find('recording').attr('rid');
             console.log('Recording ' +
                 ((state === 'on') ? 'started' : 'stopped') +
@@ -59,6 +63,35 @@ function setRecordingJirecon(state, token, callback, connection) {
             }
 
             callback(state);
+        },
+        function (error) {
+            console.log('Failed to start recording, error: ', error);
+            callback(recordingEnabled);
+        });
+}
+
+function setRecordingJibri(state, token, callback, connection) {
+    if (state == recordingEnabled){
+        return;
+    }
+
+    var focusJid = connection.emuc.focusMucJid;
+    var iq = $iq({to: focusJid, type: 'set'})
+        .c('jibri', {
+            xmlns: 'http://jitsi.org/protocol/jibri',
+            action: (state === 'on') ? 'start' : 'stop'
+            //TODO: add the stream id?
+        }).up();
+
+    console.log('Set jibri recording: '+state, iq);
+
+    connection.sendIQ(
+        iq,
+        function (result) {
+            var recordingEnabled = $(result).find('jibri').attr('state');
+            console.log('Jibri recording is now: ' + recordingEnabled);
+            //TODO hook us up to further jibri IQs so we can update the status
+            callback(recordingEnabled);
         },
         function (error) {
             console.log('Failed to start recording, error: ', error);
@@ -102,17 +135,31 @@ function setRecordingColibri(state, token, callback, connection) {
 }
 
 function setRecording(state, token, callback, connection) {
-    if (useJirecon){
+    if (useJibri) {
+        setRecordingJibri(state, token, callback, connection);
+    } else if (useJirecon){
         setRecordingJirecon(state, token, callback, connection);
     } else {
         setRecordingColibri(state, token, callback, connection);
     }
 }
 
+function handleJibriIq(iq) {
+    //TODO verify it comes from the focus
+
+    var newState = $(iq).find('jibri').attr('state');
+    if (newState) {
+        eventEmitter.emit('recording.state_changed', newState);
+    }
+}
+
 var Recording = {
-    init: function () {
+    init: function (ee) {
+        eventEmitter = ee;
         useJirecon = config.hosts &&
             (typeof config.hosts.jirecon != "undefined");
+        useJibri = config.recordingUseJibri;
+        connection.jibri.setHandler(handleJibriIq);
     },
     toggleRecording: function (tokenEmptyCallback,
                                recordingStateChangeCallback,
