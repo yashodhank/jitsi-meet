@@ -5992,7 +5992,10 @@ keyMap[RTCBrowserType.RTC_BROWSER_CHROME] = {
 };
 keyMap[RTCBrowserType.RTC_BROWSER_OPERA] =
     keyMap[RTCBrowserType.RTC_BROWSER_CHROME];
-
+keyMap[RTCBrowserType.RTC_BROWSER_IEXPLORER] =
+    keyMap[RTCBrowserType.RTC_BROWSER_CHROME];
+keyMap[RTCBrowserType.RTC_BROWSER_SAFARI] =
+    keyMap[RTCBrowserType.RTC_BROWSER_CHROME];
 /**
  * Calculates packet lost percent using the number of lost packets and the
  * number of all packet.
@@ -11705,7 +11708,7 @@ TraceablePeerConnection.prototype.addIceCandidate
 
 TraceablePeerConnection.prototype.getStats = function(callback, errback) {
     // TODO: Is this the correct way to handle Opera, Temasys?
-    if (RTCBrowserType.isFirefox()) {
+    if (RTCBrowserType.isFirefox() || RTCBrowserType.isTemasysPluginUsed()) {
         // ignore for now...
         if(!errback)
             errback = function () {};
