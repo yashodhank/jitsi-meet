@@ -9,7 +9,7 @@ import UIEvents from "../../../service/UI/UIEvents";
 let overlay = null;
 
 /**
- * Handler for UIEvents.LARGE_VIDEO_AVATAR_DISPLAYED event.
+ * Handler for UIEvents.LARGE_VIDEO_AVATAR_VISIBLE event.
  * @param {boolean} shown indicates whether the avatar on the large video is
  *  currently displayed or not.
  */
@@ -98,6 +98,9 @@ class RingOverlay {
         $(`#${this._containerId}`).remove();
     }
 
+    /**
+     * Stops the ringing and clears related timers.
+     */
     _stopAudio() {
         this.isRinging = false;
         if (this.interval) {
@@ -130,7 +133,7 @@ export default {
         }
 
         overlay = new RingOverlay(callee);
-        APP.UI.addListener(UIEvents.LARGE_VIDEO_AVATAR_DISPLAYED,
+        APP.UI.addListener(UIEvents.LARGE_VIDEO_AVATAR_VISIBLE,
             onAvatarDisplayed);
     },
 
@@ -144,7 +147,7 @@ export default {
         }
         overlay.destroy();
         overlay = null;
-        APP.UI.removeListener(UIEvents.LARGE_VIDEO_AVATAR_DISPLAYED,
+        APP.UI.removeListener(UIEvents.LARGE_VIDEO_AVATAR_VISIBLE,
             onAvatarDisplayed);
         return true;
     },

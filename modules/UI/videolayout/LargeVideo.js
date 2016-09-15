@@ -329,7 +329,7 @@ class VideoContainer extends LargeContainer {
 
         this.$avatar.css("visibility", show ? "visible" : "hidden");
 
-        this.emitter.emit(UIEvents.LARGE_VIDEO_AVATAR_DISPLAYED, show);
+        this.emitter.emit(UIEvents.LARGE_VIDEO_AVATAR_VISIBLE, show);
     }
 
     // We are doing fadeOut/fadeIn animations on parent div which wraps
