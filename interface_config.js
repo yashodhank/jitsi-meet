@@ -42,6 +42,8 @@ var interfaceConfig = { // eslint-disable-line no-unused-vars
     // Enables feedback star animation.
     ENABLE_FEEDBACK_ANIMATION: false,
     DISABLE_FOCUS_INDICATOR: false,
+    // disables the ringing sound when the RingOverlay is shown.
+    DISABLE_RINGING: false,
     AUDIO_LEVEL_PRIMARY_COLOR: "rgba(255,255,255,0.7)",
     AUDIO_LEVEL_SECONDARY_COLOR: "rgba(255,255,255,0.4)"
 };
